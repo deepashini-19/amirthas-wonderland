@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amirtha's Wonderland</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Quicksand:wght@400;500;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #faf5ef;
+  --ink: #3b2f2f;
+  --mint: #e3f1d6;
+  --mint-edge: #9ccc8a;
+  --cream: #f7f3e6;
+  --cream-edge: #cfc6a8;
+  --lilac: #e6dcf3;
+  --lilac-edge: #b39ddb;
+  --pink: #f06292;
+  --pink-deep: #d81b60;
+  --line: rgba(59, 47, 47, 0.22);
+  --lh: 32px;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Quicksand', 'Trebuchet MS', sans-serif;
+  min-height: 100vh;
+}
+
+/* ---------- LOCK SCREEN ---------- */
+.lock-screen {
+  position: fixed; inset: 0; z-index: 9999;
+  background: #fce4ec;
+  display: flex; justify-content: center; align-items: center;
+  padding: 16px;
+  transition: opacity .4s ease;
+}
+.lock-box {
+  background: #fff; padding: 36px 32px; border-radius: 24px;
+  border: 3px dashed var(--pink);
+  box-shadow: 0 10px 30px rgba(244,143,177,.3);
+  text-align: center; max-width: 360px; width: 100%;
+}
+.lock-box h2 { font-family: 'Fredoka', sans-serif; color: var(--pink-deep); margin: 0 0 12px; font-weight: 600; }
+.lock-box p { margin: 0 0 18px; font-weight: 500; }
+.lock-box input {
+  width: 100%; max-width: 230px; padding: 12px 16px; font-size: 1.2rem;
+  border: 2px solid #f8bbd0; border-radius: 12px; text-align: center;
+  letter-spacing: 3px; font-family: inherit; margin-bottom: 16px;
+}
+.lock-box input:focus { outline: 3px solid #f8bbd0; }
+.lock-box button, .btn {
+  background: var(--pink); color: #fff; border: none; border-radius: 12px;
+  padding: 11px 24px; font: 700 1rem 'Quicksand', sans-serif; cursor: pointer;
+}
+.lock-box button:hover, .btn:hover { background: #ec407a; }
+.error-msg { color: #e53935; font-weight: 700; font-size: .9rem; margin-top: 12px; display: none; }
+
+/* ---------- PAGE ---------- */
+.diary { max-width: 1040px; margin: 0 auto; padding: 16px 16px 48px; }
+
+.topbar {
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  justify-content: space-between; margin-bottom: 14px;
+}
+.date-nav { display: flex; align-items: center; gap: 8px; }
+.date-pill {
+  font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 1.1rem;
+  color: #6a3d8f; background: #fff; border: 1.5px dashed var(--lilac-edge);
+  padding: 5px 16px; border-radius: 14px; min-width: 150px; text-align: center;
+}
+.chip {
+  background: #fff; border: 2px solid var(--lilac-edge); border-radius: 20px;
+  padding: 6px 14px; font: 700 .85rem 'Quicksand', sans-serif; cursor: pointer; color: var(--ink);
+}
+.chip:hover { background: #f5eef8; }
+.chip:focus-visible, .btn:focus-visible, textarea:focus-visible { outline: 3px solid #f48fb1; outline-offset: 2px; }
+.save-status { font-size: .85rem; color: #7a6a6a; min-width: 70px; }
+
+.bday-banner {
+  display: none; text-align: center; margin-bottom: 14px; padding: 12px;
+  background: #fff3c4; border: 2px dashed #f2c94c; border-radius: 16px;
+  font-family: 'Fredoka', sans-serif; font-size: 1.15rem;
+}
+
+/* ---------- GRID ---------- */
+.grid {
+  display: grid; gap: 18px;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto minmax(250px, 1fr) minmax(190px, .8fr);
+  grid-template-areas:
+    "title    title      title"
+    "smile    memorable  exciting"
+    "smile    memorable  feathers";
+}
+.card {
+  position: relative; display: flex; flex-direction: column;
+  padding: 14px 14px 12px; border: 2.5px solid; border-radius: 22px;
+}
+.card.smile     { grid-area: smile;     background: var(--mint);  border-color: var(--mint-edge); }
+.card.memorable { grid-area: memorable; background: var(--cream); border-color: var(--cream-edge); }
+.card.exciting  { grid-area: exciting;  background: var(--lilac); border-color: var(--lilac-edge); }
+.card.feathers  { grid-area: feathers;  background: var(--mint);  border-color: var(--mint-edge); }
+
+.card label {
+  font-family: 'Patrick Hand', 'Quicksand', cursive; font-size: 1.2rem;
+  margin-bottom: 6px; display: block;
+}
+.card .deco { position: absolute; top: -16px; right: 14px; font-size: 1.9rem; }
+
+textarea {
+  flex: 1; width: 100%; min-height: 150px; resize: none; border: none;
+  background-color: transparent;
+  background-image: repeating-linear-gradient(to bottom,
+      transparent 0, transparent calc(var(--lh) - 1px),
+      var(--line) calc(var(--lh) - 1px), var(--line) var(--lh));
+  background-attachment: local;
+  font: 500 1.05rem/var(--lh) 'Quicksand', sans-serif; color: var(--ink);
+  padding: 0 4px; border-radius: 6px;
+}
+textarea::placeholder { color: rgba(59,47,47,.4); }
+
+/* ---------- TITLE CARD ---------- */
+.title-card {
+  grid-area: title; display: flex; flex-wrap: wrap; gap: 20px;
+  align-items: center; justify-content: space-between;
+  background: #ead9f7; border: 2.5px solid var(--lilac-edge); border-radius: 26px; padding: 18px 26px;
+}
+.title-card h1 {
+  margin: 0; font-family: 'Fredoka', sans-serif; font-weight: 600; letter-spacing: .04em;
+  font-size: clamp(1.5rem, 4vw, 2.3rem); color: #4a2a6b; line-height: 1.15;
+}
+.title-card h1 small {
+  display: block; font-family: 'Patrick Hand', cursive; font-weight: 400;
+  letter-spacing: 0; font-size: 1.3rem; color: #6a3d8f; margin-top: 4px;
+}
+.pets { display: flex; gap: 14px; flex-wrap: wrap; }
+.pet { text-align: center; font-family: 'Patrick Hand', cursive; font-size: 1rem; }
+.pet span { display: block; font-size: 2.2rem; line-height: 1.1; }
+
+.tags { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 4px; }
+.tags span { font-family: 'Patrick Hand', cursive; font-size: 1.15rem; color: #6a4f4f; }
+
+/* wobble only when someone hovers a pet */
+.pet:hover span { animation: wiggle .5s ease; }
+@keyframes wiggle { 25% { transform: rotate(-12deg); } 75% { transform: rotate(12deg); } }
+@media (prefers-reduced-motion: reduce) { .pet:hover span { animation: none; } }
+
+/* ---------- MOBILE ---------- */
+@media (max-width: 760px) {
+  .grid {
+    grid-template-columns: 1fr; grid-template-rows: none;
+    grid-template-areas: "title" "smile" "memorable" "exciting" "feathers";
+  }
+  textarea { min-height: 220px; }
+  .topbar { justify-content: center; }
+}
+
+/* ---------- SIDEBAR ---------- */
+.sidebar {
+  position: fixed; top: 0; right: -300px; width: 270px; height: 100%;
+  background: #fff; box-shadow: -4px 0 15px rgba(0,0,0,.12);
+  transition: right .3s ease; padding: 20px; z-index: 1000;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.sidebar.open { right: 0; }
+.sidebar h3 { font-family: 'Fredoka', sans-serif; margin: 0; }
+.sidebar p { font-size: .85rem; color: gray; margin: 0; }
+.date-list { list-style: none; margin: 0; padding: 0; overflow-y: auto; flex: 1; }
+.date-list li {
+  padding: 10px; background: #f5f5f5; margin-bottom: 8px; border-radius: 8px;
+  cursor: pointer; text-align: center; font-weight: 700;
+}
+.date-list li:hover, .date-list li.active { background: #e2f0d9; }
+.date-list .empty { cursor: default; background: none; font-weight: 500; color: gray; }
+.sidebar .row { display: flex; gap: 8px; flex-wrap: wrap; }
+.sidebar .row .btn { flex: 1; padding: 9px 10px; font-size: .85rem; }
+.btn.alt { background: #9575cd; }
+.btn.alt:hover { background: #7e57c2; }
+</style>
+</head>
+<body>
+
+<!-- LOCK SCREEN -->
+<div class="lock-screen" id="lockScreen">
+  <div class="lock-box">
+    <h2>Amirtha's Wonderland 🌸</h2>
+    <p>Enter your secret 8-digit key</p>
+    <input type="password" id="passwordField" placeholder="DDMMYYYY" maxlength="8"
+           inputmode="numeric" autocomplete="off" aria-label="Password">
+    <br>
+    <button type="button" id="unlockBtn">Unlock diary ✨</button>
+    <div class="error-msg" id="errorMsg" role="alert">Wrong password. Try again 💕</div>
+  </div>
+</div>
+
+<!-- DIARY -->
+<main class="diary">
+  <div class="bday-banner" id="bdayBanner">🎂 Happy Birthday, Amirtha! 🎉 Your Wonderland is ready ✨</div>
+
+  <div class="topbar">
+    <div class="date-nav">
+      <button class="chip" id="prevDay" aria-label="Previous day">◀</button>
+      <div class="date-pill" id="currentDateDisplay">Loading…</div>
+      <button class="chip" id="nextDay" aria-label="Next day">▶</button>
+      <span class="save-status" id="saveStatus" aria-live="polite"></span>
+    </div>
+    <button class="chip" id="openHistory">📁 Memory Lane</button>
+  </div>
+
+  <div class="grid">
+    <section class="title-card">
+      <h1>AMIRTHA'S WONDERLAND
+        <small>secret thoughts and tiny adventures</small>
+      </h1>
+      <div class="pets" aria-label="Leo, Brownie, Sora and Amirtha">
+        <div class="pet"><span>🐶</span>Leo</div>
+        <div class="pet"><span>🐕</span>Brownie</div>
+        <div class="pet"><span>🐩</span>Sora</div>
+        <div class="pet"><span>👧</span>Amirtha</div>
+      </div>
+    </section>
+
+    <section class="card smile">
+      <span class="deco">🙂</span>
+      <label for="happyInput"># what brought a smile to your face</label>
+      <textarea id="happyInput" placeholder="Write here…"></textarea>
+    </section>
+
+    <section class="card memorable">
+      <span class="deco">🐰</span>
+      <label for="memorableInput"># "memorable things happened today"</label>
+      <textarea id="memorableInput" placeholder="Write here…"></textarea>
+    </section>
+
+    <section class="card exciting">
+      <span class="deco">🪐</span>
+      <label for="excitingInput"># who's the most exciting part of your day</label>
+      <textarea id="excitingInput" placeholder="Write here…"></textarea>
+    </section>
+
+    <section class="card feathers">
+      <span class="deco">🐸</span>
+      <label for="feathersInput"># "what ruffled your feathers today?"</label>
+      <textarea id="feathersInput" placeholder="Write here…"></textarea>
+    </section>
+
+    <div class="tags">
+      <span>#StayBlessed</span><span>#BeBrave</span><span>#forever</span>
+      <span>#havefun</span><span>#loveyou</span>
+    </div>
+  </div>
+</main>
+
+<!-- HISTORY DRAWER -->
+<aside class="sidebar" id="archiveSidebar" aria-label="Past entries">
+  <h3>Memory Lane</h3>
+  <p>Tap a date to open that day:</p>
+  <ul class="date-list" id="savedDatesContainer"></ul>
+  <div class="row">
+    <button class="btn" id="todayBtn">Today</button>
+    <button class="btn alt" id="closeBtn">Close</button>
+  </div>
+  <div class="row">
+    <button class="btn alt" id="exportBtn">⬇ Backup</button>
+    <button class="btn alt" id="importBtn">⬆ Restore</button>
+  </div>
+  <input type="file" id="importFile" accept="application/json" hidden>
+</aside>
+
+<script>
+(function () {
+  'use strict';
+
+  // Password is stored base64-encoded (light obfuscation only, not real security).
+  // To change it, run  btoa("NEWPASSWORD")  in the browser console and paste the result.
+  var PASSWORD_B64 = 'MTQxMDIwMDg='; // 14102008
+  var PREFIX = 'diary_';
+  var FIELDS = { happy: 'happyInput', memorable: 'memorableInput', exciting: 'excitingInput', feathers: 'feathersInput' };
+
+  var currentKey = todayKey();
+  var viewingToday = true;
+  var saveTimer = null;
+
+  function $(id) { return document.getElementById(id); }
+
+  /* ---------- storage helpers (never throw) ---------- */
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
+  function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+  function lsKeys() {
+    var out = [];
+    try { for (var i = 0; i < localStorage.length; i++) out.push(localStorage.key(i)); } catch (e) {}
+    return out;
+  }
+
+  /* ---------- dates ---------- */
+  function fmtKey(d) {
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  function todayKey() { return fmtKey(new Date()); }
+  function parseKey(k) { var p = k.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function human(k) {
+    return parseKey(k).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+  }
+  function shiftKey(k, days) { var d = parseKey(k); d.setDate(d.getDate() + days); return fmtKey(d); }
+
+  /* ---------- lock ---------- */
+  function unlock() {
+    var ls = $('lockScreen');
+    ls.style.opacity = '0';
+    setTimeout(function () { ls.style.display = 'none'; }, 400);
+    try { sessionStorage.setItem('wonderland_unlocked', '1'); } catch (e) {}
+    var t = new Date();
+    if (t.getDate() === 14 && t.getMonth() === 9) $('bdayBanner').style.display = 'block';
+  }
+  function checkPassword() {
+    var entered = $('passwordField').value.trim();
+    if (btoa(entered) === PASSWORD_B64) {
+      unlock();
+    } else {
+      $('errorMsg').style.display = 'block';
+      $('passwordField').value = '';
+      $('passwordField').focus();
+    }
+  }
+
+  /* ---------- load / save ---------- */
+  function readEntry(key) {
+    var raw = lsGet(PREFIX + key);
+    if (!raw) return { happy: '', memorable: '', exciting: '', feathers: '' };
+    try {
+      var o = JSON.parse(raw) || {};
+      return { happy: o.happy || '', memorable: o.memorable || '', exciting: o.exciting || '', feathers: o.feathers || '' };
+    } catch (e) {
+      return { happy: '', memorable: '', exciting: '', feathers: '' };
+    }
+  }
+  function loadEntry(key) {
+    flushSave();
+    currentKey = key;
+    viewingToday = (key === todayKey());
+    var e = readEntry(key);
+    Object.keys(FIELDS).forEach(function (f) { $(FIELDS[f]).value = e[f]; });
+    $('currentDateDisplay').textContent = viewingToday ? 'Today · ' + human(key) : human(key);
+    $('nextDay').disabled = false;
+    $('saveStatus').textContent = '';
+    renderArchive();
+  }
+  function saveNow() {
+    var data = {}, any = false;
+    Object.keys(FIELDS).forEach(function (f) {
+      data[f] = $(FIELDS[f]).value;
+      if (data[f].trim()) any = true;
+    });
+    if (any) {
+      var ok = lsSet(PREFIX + currentKey, JSON.stringify(data));
+      $('saveStatus').textContent = ok ? 'Saved ✓' : 'Could not save';
+    } else {
+      lsDel(PREFIX + currentKey);
+      $('saveStatus').textContent = '';
+    }
+    renderArchive();
+  }
+  function queueSave() {
+    $('saveStatus').textContent = 'Saving…';
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function () { saveTimer = null; saveNow(); }, 300);
+  }
+  function flushSave() {
+    if (saveTimer) { clearTimeout(saveTimer); saveTimer = null; saveNow(); }
+  }
+
+  /* ---------- history drawer ---------- */
+  function renderArchive() {
+    var list = $('savedDatesContainer');
+    var keys = lsKeys().filter(function (k) { return k.indexOf(PREFIX) === 0; })
+      .map(function (k) { return k.slice(PREFIX.length); })
+      .filter(function (k) { return /^\d{4}-\d{2}-\d{2}$/.test(k); })
+      .sort().reverse();
+    list.innerHTML = '';
+    if (!keys.length) {
+      var li = document.createElement('li');
+      li.className = 'empty';
+      li.textContent = 'No entries yet. Start writing! 🌷';
+      list.appendChild(li);
+      return;
+    }
+    keys.forEach(function (k) {
+      var li = document.createElement('li');
+      li.textContent = human(k);
+      if (k === currentKey) li.className = 'active';
+      li.addEventListener('click', function () { loadEntry(k); closeSidebar(); });
+      list.appendChild(li);
+    });
+  }
+  function openSidebar() { renderArchive(); $('archiveSidebar').classList.add('open'); }
+  function closeSidebar() { $('archiveSidebar').classList.remove('open'); }
+
+  /* ---------- backup / restore ---------- */
+  function exportBackup() {
+    flushSave();
+    var all = {};
+    lsKeys().forEach(function (k) { if (k.indexOf(PREFIX) === 0) all[k] = lsGet(k); });
+    var blob = new Blob([JSON.stringify(all, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'amirthas-wonderland-backup-' + todayKey() + '.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  }
+  function importBackup(file) {
+    var r = new FileReader();
+    r.onload = function () {
+      try {
+        var all = JSON.parse(r.result);
+        Object.keys(all).forEach(function (k) {
+          if (k.indexOf(PREFIX) === 0 && typeof all[k] === 'string') lsSet(k, all[k]);
+        });
+        loadEntry(currentKey);
+        alert('Diary restored 💕');
+      } catch (e) { alert('That file is not a valid diary backup.'); }
+    };
+    r.readAsText(file);
+  }
+
+  /* ---------- wire up ---------- */
+  $('unlockBtn').addEventListener('click', checkPassword);
+  $('passwordField').addEventListener('keyup', function (e) {
+    if (e.key === 'Enter') checkPassword(); else $('errorMsg').style.display = 'none';
+  });
+  Object.keys(FIELDS).forEach(function (f) { $(FIELDS[f]).addEventListener('input', queueSave); });
+  $('prevDay').addEventListener('click', function () { loadEntry(shiftKey(currentKey, -1)); });
+  $('nextDay').addEventListener('click', function () {
+    var n = shiftKey(currentKey, 1);
+    if (n > todayKey()) return; // no writing in the future
+    loadEntry(n);
+  });
+  $('openHistory').addEventListener('click', openSidebar);
+  $('closeBtn').addEventListener('click', closeSidebar);
+  $('todayBtn').addEventListener('click', function () { loadEntry(todayKey()); closeSidebar(); });
+  $('exportBtn').addEventListener('click', exportBackup);
+  $('importBtn').addEventListener('click', function () { $('importFile').click(); });
+  $('importFile').addEventListener('change', function (e) {
+    if (e.target.files[0]) importBackup(e.target.files[0]);
+    e.target.value = '';
+  });
+  window.addEventListener('beforeunload', flushSave);
+  document.addEventListener('visibilitychange', function () { if (document.hidden) flushSave(); });
+
+  // If the tab stays open past midnight, move "today" forward.
+  setInterval(function () {
+    if (viewingToday && currentKey !== todayKey()) loadEntry(todayKey());
+  }, 60000);
+
+  // Start
+  loadEntry(todayKey());
+  try {
+    if (sessionStorage.getItem('wonderland_unlocked') === '1') {
+      $('lockScreen').style.display = 'none';
+    } else {
+      $('passwordField').focus();
+    }
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>
